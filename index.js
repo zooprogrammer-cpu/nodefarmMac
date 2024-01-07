@@ -53,9 +53,11 @@ const server = http.createServer((req, res)=>{
     console.log('Entered product')
     let params = new URLSearchParams(req.url);
     console.log('params:', params);
-    let id = params.get("/product?=id=");
+    let idLong = params.get("/product?");
+    let id = idLong.substring(idLong.lastIndexOf('=') + 1)
     console.log('id:', id);
-    const product = dataObj['0'];
+
+    const product = dataObj[id];
     console.log('product:', product);
     const output = replaceTemplate(tempProduct, product);
     res.end(output);
