@@ -31,13 +31,15 @@ const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.htm
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 // parse the data to an object
 const dataObj = JSON.parse(data);
+// console.log('dataObj:',dataObj);
 
 const server = http.createServer((req, res)=>{
   console.log('req.url: ', req.url);
-  const pathName = req.url;
+  console.log(url.parse(req.url, true));
+  const {pathname} = url.parse(req.url, true);
 
   // Overview page
-  if (pathName === '/' || pathName === '/overview') {
+  if (pathname === '/' || pathname === '/overview') {
     res.writeHead(200, {'Content-type' : 'text/html'});
     // loop through dataObj array and replace them as placeholders in the template
     // join to convert the array into a string
@@ -46,11 +48,20 @@ const server = http.createServer((req, res)=>{
     res.end(output);
 
   // Product Page
-  } else if (pathName === '/product') {
-    res.end('This is the product');
+  } else if (pathname === '/product') {
+    res.writeHead(200, {'Content-type' : 'text/html'});
+    console.log('Entered product')
+    let params = new URLSearchParams(req.url);
+    console.log('params:', params);
+    let id = params.get("/product?=id=");
+    console.log('id:', id);
+    const product = dataObj['0'];
+    console.log('product:', product);
+    const output = replaceTemplate(tempProduct, product);
+    res.end(output);
 
   // API
-  } else if (pathName === '/api'){
+  } else if (pathname === '/api'){
     res.writeHead(200, {'Content-type' : 'application/json'});
     res.end(data);
 
